@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>Breast Cancer Detection with Random Forest — Final Project</title>
+<style>
+  :root { --bg: #ffffff; --fg: #000000; --muted: #333333; --line: #111111; --accent: #000000; }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; background: #222; color: var(--fg); font-family: Arial, Helvetica, sans-serif; }
+  .deck { max-width: 1100px; margin: 0 auto; }
+  .slide {
+    background: var(--bg);
+    color: var(--fg);
+    width: 100%;
+    min-height: 100vh;
+    padding: 48px 64px;
+    border-bottom: 8px solid #222;
+    display: none;
+    page-break-after: always;
+  }
+  .slide.active { display: block; }
+  h1 { font-size: 40px; margin: 0 0 16px; font-weight: 800; line-height: 1.15; }
+  h2 { font-size: 32px; margin: 0 0 20px; font-weight: 800; border-bottom: 3px solid #000; padding-bottom: 10px; }
+  h3 { font-size: 22px; margin: 18px 0 8px; }
+  p, li { font-size: 22px; line-height: 1.4; color: var(--muted); }
+  ul { margin: 8px 0 8px 28px; padding: 0; }
+  li { margin: 8px 0; }
+  .subtitle { font-size: 24px; color: #222; margin-top: 12px; }
+  .meta { font-size: 18px; margin-top: 28px; color: #222; }
+  .big { font-size: 28px; font-weight: 700; color: #000; }
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; }
+  table { width: 100%; border-collapse: collapse; margin-top: 12px; font-size: 20px; }
+  th, td { border: 2px solid #000; padding: 10px 12px; text-align: left; }
+  th { background: #000; color: #fff; }
+  .footer { position: fixed; bottom: 16px; right: 24px; color: #fff; font-size: 14px; z-index: 10; }
+  .hint { color: #ccc; font-size: 13px; position: fixed; bottom: 16px; left: 24px; z-index: 10; }
+  .metric { font-size: 36px; font-weight: 800; color: #000; }
+  .small { font-size: 16px; color: #444; }
+  @media print {
+    body { background: #fff; }
+    .slide { display: block !important; min-height: auto; height: 100vh; border: none; }
+    .footer, .hint { display: none; }
+  }
+</style>
+</head>
+<body>
+<div class="hint">← → or Space to navigate · P to print/PDF</div>
+<div class="footer"><span id="page">1</span> / <span id="total">12</span></div>
+<div class="deck">
+
+<section class="slide active">
+  <h1>Breast Cancer Detection Using Random Forest</h1>
+  <p class="subtitle">Final Project Presentation</p>
+  <p class="meta">Machine Learning<br>Wisconsin Diagnostic Breast Cancer (WDBC) Dataset<br>~12 minutes</p>
+</section>
+
+<section class="slide">
+  <h2>1. Problem Statement &amp; Motivation</h2>
+  <ul>
+    <li><b>Problem:</b> Classify breast tumors as <b>benign</b> or <b>malignant</b> from digitized fine-needle aspirate features.</li>
+    <li><b>Why it matters:</b> Early, accurate detection supports clinical decision-making and can reduce false reassurance or unnecessary procedures.</li>
+    <li><b>ML opportunity:</b> Morphological features (radius, texture, area, concavity, etc.) are measurable and suitable for supervised learning.</li>
+    <li><b>Goal:</b> Build a reliable, interpretable classifier with strong generalization on a locked holdout set.</li>
+  </ul>
+</section>
+
+<section class="slide">
+  <h2>2. Dataset Description</h2>
+  <ul>
+    <li><b>Source:</b> Wisconsin Diagnostic Breast Cancer (WDBC)</li>
+    <li><b>Samples:</b> 569 tumors · <b>Features:</b> 30 numeric (mean / SE / worst of 10 measurements)</li>
+    <li><b>Target:</b> diagnosis → Benign (0) / Malignant (1)</li>
+    <li><b>Split:</b> Development 455 (80%) · Final holdout 114 (20%), locked</li>
+    <li><b>Preprocessing:</b> Cleaned IDs/labels; <b>unscaled</b> features (tree models do not require scaling)</li>
+  </ul>
+  <p class="small">Files: development_unscaled.csv · test_unscaled_FINAL_HOLDOUT.csv</p>
+</section>
+
+<section class="slide">
+  <h2>3. Methods / Algorithms</h2>
+  <ul>
+    <li><b>Primary model:</b> Random Forest Classifier (ensemble of decision trees)</li>
+    <li>Each tree trained on a <b>bootstrap sample</b>; random feature subset at each split</li>
+    <li>Final label by <b>majority vote</b> across trees</li>
+    <li><b>Class balancing:</b> class_weight = balanced_subsample</li>
+    <li><b>Tuning:</b> GridSearchCV + <b>5-fold stratified CV</b> on development set (optimize accuracy)</li>
+  </ul>
+  <p class="big">Best model: 300 trees · max_features=sqrt · min_samples_split=5 · max_depth=None</p>
+</section>
+
+<section class="slide">
+  <h2>4. Project Workflow</h2>
+  <ol>
+    <li>Clean WDBC → 30 features + diagnosis</li>
+    <li>80/20 stratified split → development vs locked holdout</li>
+    <li>GridSearchCV over forest hyperparameters (5-fold CV)</li>
+    <li>Refit best model; report CV metrics</li>
+    <li>Evaluate once on holdout (accuracy, F1, MCC, ROC-AUC, confusion matrix)</li>
+    <li>Analyze feature importance for interpretability</li>
+  </ol>
+</section>
+
+<section class="slide">
+  <h2>5. Experimental Results — Cross-Validation</h2>
+  <p>Development set (n=455), 5-fold stratified CV:</p>
+  <table>
+    <tr><th>Metric</th><th>Mean</th><th>Std</th></tr>
+    <tr><td>Accuracy</td><td><b>96.48%</b></td><td>±1.28%</td></tr>
+    <tr><td>Precision</td><td>95.36%</td><td>±2.19%</td></tr>
+    <tr><td>Recall</td><td>95.29%</td><td>±3.00%</td></tr>
+    <tr><td>F1</td><td>95.28%</td><td>±1.72%</td></tr>
+    <tr><td>ROC-AUC</td><td>98.85%</td><td>±0.73%</td></tr>
+  </table>
+  <p class="small">Stable across folds → low overfitting risk during model selection</p>
+</section>
+
+<section class="slide">
+  <h2>6. Holdout Results (Final Test)</h2>
+  <div class="grid2">
+    <div>
+      <p class="metric">97.37%</p>
+      <p>Holdout Accuracy (n=114)</p>
+      <ul>
+        <li>F1 = <b>0.963</b></li>
+        <li>MCC = <b>0.944</b></li>
+        <li>ROC-AUC = <b>0.996</b></li>
+        <li>Precision (malignant) = <b>1.00</b></li>
+        <li>Recall (malignant) = <b>0.93</b></li>
+      </ul>
+    </div>
+    <div>
+      <h3>Confusion Matrix</h3>
+      <table>
+        <tr><th></th><th>Pred Benign</th><th>Pred Malignant</th></tr>
+        <tr><td><b>True Benign</b></td><td>72</td><td>0</td></tr>
+        <tr><td><b>True Malignant</b></td><td>3</td><td>39</td></tr>
+      </table>
+      <p class="small">0 false positives; 3 false negatives (missed malignant cases)</p>
+    </div>
+  </div>
+</section>
+
+<section class="slide">
+  <h2>7. Analysis &amp; Baseline Comparison</h2>
+  <ul>
+    <li><b>Why Random Forest:</b> Handles nonlinear interactions, robust to feature scale, provides feature importance.</li>
+    <li><b>Vs. a single decision tree:</b> Forest reduces variance via bagging + feature randomness → more stable CV accuracy.</li>
+    <li><b>Vs. linear models:</b> Tumor morphology often involves nonlinear boundaries; RF captures these without heavy feature engineering.</li>
+    <li><b>Error analysis:</b> All errors were false negatives (3/42 malignant). Clinically important — prioritize recall in future tuning.</li>
+    <li><b>Top features:</b> area_worst, perimeter_worst, concave_points_worst/mean, radius_worst (size + shape irregularity)</li>
+  </ul>
+</section>
+
+<section class="slide">
+  <h2>8. Feature Importance (Top 5)</h2>
+  <table>
+    <tr><th>Rank</th><th>Feature</th><th>Importance</th></tr>
+    <tr><td>1</td><td>area_worst</td><td>0.146</td></tr>
+    <tr><td>2</td><td>perimeter_worst</td><td>0.142</td></tr>
+    <tr><td>3</td><td>concave_points_worst</td><td>0.103</td></tr>
+    <tr><td>4</td><td>concave_points_mean</td><td>0.100</td></tr>
+    <tr><td>5</td><td>radius_worst</td><td>0.079</td></tr>
+  </table>
+  <p>Interpretation: “worst” (most extreme) cell measurements dominate — consistent with clinical intuition that irregular, larger nuclei indicate malignancy.</p>
+</section>
+
+<section class="slide">
+  <h2>9. Future Directions</h2>
+  <ul>
+    <li><b>Optimize for recall / cost-sensitive learning</b> to reduce false negatives further.</li>
+    <li>Compare stronger baselines: Logistic Regression, SVM, Gradient Boosting/XGBoost (same split).</li>
+    <li>Calibration of predicted probabilities for clinical risk communication.</li>
+    <li>Feature reduction / ablation using importance rankings.</li>
+    <li>External validation on additional cohorts beyond WDBC.</li>
+    <li>Explainability: SHAP values for case-level explanations.</li>
+  </ul>
+</section>
+
+<section class="slide">
+  <h2>10. Conclusion</h2>
+  <ul>
+    <li>Built a tuned Random Forest for breast cancer classification on WDBC.</li>
+    <li><b>5-fold CV accuracy ≈ 96.5%</b>; <b>holdout accuracy ≈ 97.4%</b>.</li>
+    <li>Excellent discrimination (ROC-AUC ≈ 0.996) with zero false positives on holdout.</li>
+    <li>Remaining gap: 3 missed malignant cases → future work targets recall.</li>
+    <li>Model is accurate, stable, and interpretable via feature importance.</li>
+  </ul>
+  <p class="big">Thank you — Questions?</p>
+</section>
+
+<section class="slide">
+  <h2>Appendix — Anticipated Questions</h2>
+  <ul>
+    <li><b>Why unscaled features?</b> Tree splits are scale-invariant; scaling unnecessary for RF.</li>
+    <li><b>Why not deep learning?</b> Tabular, small-n dataset; RF is strong, interpretable, and less overfit-prone here.</li>
+    <li><b>Class imbalance?</b> Used balanced_subsample; malignant recall still the main residual error.</li>
+    <li><b>Data leakage?</b> Holdout locked; tuning only on development CV.</li>
+  </ul>
+</section>
+
+</div>
+<script>
+  const slides = [...document.querySelectorAll('.slide')];
+  const total = slides.length;
+  document.getElementById('total').textContent = total;
+  let i = 0;
+  function show(n) {
+    i = Math.max(0, Math.min(total - 1, n));
+    slides.forEach((s, idx) => s.classList.toggle('active', idx === i));
+    document.getElementById('page').textContent = i + 1;
+  }
+  window.addEventListener('keydown', (e) => {
+    if (['ArrowRight', 'Space', 'PageDown'].includes(e.code) || e.key === ' ') { e.preventDefault(); show(i + 1); }
+    if (['ArrowLeft', 'PageUp'].includes(e.code)) { e.preventDefault(); show(i - 1); }
+    if (e.key === 'Home') show(0);
+    if (e.key === 'End') show(total - 1);
+    if (e.key.toLowerCase() === 'p') window.print();
+  });
+</script>
+</body>
+</html>

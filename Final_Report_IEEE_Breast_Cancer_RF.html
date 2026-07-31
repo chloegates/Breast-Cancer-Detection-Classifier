@@ -1,0 +1,678 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Final_Report_IEEE_Breast_Cancer_RF</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid #1a1a1a;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+</head>
+<body>
+<h1
+id="breast-cancer-diagnosis-prediction-using-random-forest-classification">Breast
+Cancer Diagnosis Prediction Using Random Forest Classification</h1>
+<p><strong>Chloe Gates</strong><br />
+Georgia State University<br />
+Department of Computer Science<br />
+Atlanta, GA, USA<br />
+Email: chloegates152910@gmail.com</p>
+<p><em>Note: Replace author block with all team members’ names/emails
+before final Dropbox submission. Each teammate must submit the report
+separately.</em></p>
+<hr />
+<h2 id="abstract">Abstract</h2>
+<p>Breast cancer remains one of the most common cancers among women
+worldwide, and early differentiation of benign from malignant tumors is
+critical for clinical decision-making. This paper presents a Random
+Forest classifier trained on the Wisconsin Diagnostic Breast Cancer
+(WDBC) dataset to predict tumor malignancy from thirty numerical
+features extracted from digitized fine-needle aspirate images of cell
+nuclei. We preprocess and encode the data, perform an 80/20 stratified
+split into a development set (455 samples) and a locked holdout set (114
+samples), and leave features unscaled because tree-based models are
+invariant to monotonic feature scaling. Model selection uses
+GridSearchCV with five-fold stratified cross-validation. The best
+configuration employs 300 trees, () feature sampling at each split,
+bootstrap aggregating, and balanced subsample class weighting. On
+development data, mean cross-validated accuracy reaches 96.48% () 1.28%.
+On the untouched holdout set, the model achieves 97.37% accuracy,
+F1-score 0.963, Matthews correlation coefficient 0.944, and ROC-AUC
+0.996, with zero false positives and three false negatives. Feature
+importance analysis highlights worst-area, worst-perimeter, and
+concave-points measurements as dominant predictors. We discuss metric
+interpretations, limitations regarding false negatives, and future
+directions including cost-sensitive learning, stronger baselines, and
+SHAP-based explainability.</p>
+<p><strong>Keywords:</strong> Random Forest, breast cancer diagnosis,
+ensemble learning, cross-validation, WDBC, machine learning</p>
+<hr />
+<h2 id="i.-introduction">I. Introduction</h2>
+<p>Accurate, early classification of breast tumors as benign or
+malignant can reduce diagnostic delay and support triage decisions after
+biopsy imaging analysis. Classical clinical assessment of fine-needle
+aspirate (FNA) samples relies on morphological inspection of cell
+nuclei; the Wisconsin Diagnostic Breast Cancer (WDBC) dataset encodes
+those morphological properties as quantitative features suitable for
+supervised learning [1], [2].</p>
+<p>Machine learning models can learn nonlinear decision boundaries over
+such features and provide reproducible predictions. Among tabular
+classifiers, Random Forests are attractive because they (i) reduce
+variance through bootstrap aggregating (bagging), (ii) inject feature
+randomness at each split to decorrelate trees, (iii) require little
+feature scaling, and (iv) yield interpretable feature-importance
+rankings [3], [4].</p>
+<p><strong>Motivation.</strong> In clinical screening contexts, false
+negatives (missed malignancies) are especially costly, while false
+positives create unnecessary follow-up burden. Our goal is to develop a
+strong, transparent baseline Random Forest for WDBC that generalizes to
+a locked holdout set and surfaces which nucleus measurements drive
+predictions.</p>
+<p><strong>Contributions.</strong> This work (1) establishes a clean
+train/holdout protocol with stratified sampling; (2) tunes a Random
+Forest using five-fold stratified cross-validation and GridSearchCV; (3)
+reports a full metric suite (accuracy, precision, recall, F1, MCC,
+ROC-AUC) with visualizations; and (4) analyzes feature importance and
+error modes to guide future recall-oriented improvements.</p>
+<hr />
+<h2 id="ii.-related-work-literature-review">II. Related Work /
+Literature Review</h2>
+<p>Ensemble tree methods are widely used in biomedical tabular
+prediction. Breiman’s Random Forest algorithm combines bagging with
+random feature selection to improve generalization over single trees
+[3]. Subsequent surveys summarize ensemble practice and evaluation
+protocols in clinical ML [4], [5].</p>
+<p>On breast cancer tabular datasets, prior studies report strong
+performance for Random Forests, Support Vector Machines (SVMs), and
+boosting methods on WDBC and related corpora [6], [7]. Comparative
+pipelines typically include stratified cross-validation, hyperparameter
+search, and reporting of sensitivity/specificity alongside accuracy
+because class imbalance and asymmetric clinical costs matter [8].</p>
+<p>Our methodology is also informed by published Random Forest clinical
+workflows that emphasize five-fold CV, GridSearchCV, and multi-metric
+evaluation (accuracy, precision, recall, F1, MCC, ROC-AUC), including
+recent risk-stratification studies outside oncology that share the same
+modeling template [9]. Explainability tools such as SHAP have become
+common for interpreting ensemble decisions in medicine [10]. Deep
+learning dominates imaging-based breast cancer CAD [11], but for
+small-to-medium tabular FNA feature sets, classical ensembles remain
+competitive and more sample-efficient [12].</p>
+<p>Relative to this literature, our paper focuses on a carefully locked
+holdout evaluation, unscaled features for trees, and a detailed
+discussion of false-negative residual errors on WDBC.</p>
+<hr />
+<h2 id="iii.-methodology">III. Methodology</h2>
+<h3 id="a.-problem-formulation">A. Problem Formulation</h3>
+<p>Let ( ^{30}) denote a tumor’s feature vector and (y {0,1}) the
+diagnosis label (0 = benign, 1 = malignant). We learn a classifier
+(f:^{30}{0,1}) minimizing classification error under stratified
+validation, then evaluate once on holdout data.</p>
+<h3 id="b.-random-forest-classifier">B. Random Forest Classifier</h3>
+<p>A Random Forest is an ensemble of (B) decision trees
+({T_b}_{b=1}^{B}). For each tree (b):</p>
+<ol type="1">
+<li><strong>Bootstrap sampling (bagging):</strong> Draw a training set
+(D_b) of size (n) from the development data <strong>with
+replacement</strong>.</li>
+<li><strong>Tree growth with feature randomness:</strong> At each split,
+randomly select (m=) features ((p=30)) and choose the best split among
+them (Gini impurity by default in scikit-learn).</li>
+<li><strong>Prediction:</strong> For a new (), each tree votes a class;
+the forest returns the majority vote [ = (T_1(),,T_B()). ] Class
+probabilities are estimated by the fraction of trees voting for each
+class.</li>
+</ol>
+<p><strong>Class weighting.</strong> We set
+<code>class_weight="balanced_subsample"</code> so class weights are
+computed from each tree’s bootstrap sample, mitigating mild imbalance
+between benign and malignant cases.</p>
+<h3 id="c.-hyperparameter-tuning-and-cross-validation">C. Hyperparameter
+Tuning and Cross-Validation</h3>
+<p>We use <strong>five-fold stratified cross-validation</strong> on the
+development set. In fold (k), the model trains on four folds and
+validates on the held-out fold. GridSearchCV searches:</p>
+<ul>
+<li><code>n_estimators</code> ({100,200,300})</li>
+<li><code>max_depth</code> ({,5,10,20})</li>
+<li><code>min_samples_split</code> ({2,5})</li>
+<li><code>min_samples_leaf</code> ({1,2})</li>
+<li><code>max_features</code> ({,})</li>
+</ul>
+<p>Selection metric: <strong>accuracy</strong>. The winning
+configuration is refit on the full development set.</p>
+<p><strong>Best model:</strong> (B=300), <code>max_depth=None</code>,
+<code>max_features=sqrt</code>, <code>min_samples_split=5</code>,
+<code>min_samples_leaf=1</code>, <code>random_state=42</code>.</p>
+<h3 id="d.-relationship-between-bootstrap-and-cross-validation">D.
+Relationship Between Bootstrap and Cross-Validation</h3>
+<p>Cross-validation is the <strong>outer</strong> evaluation/tuning
+loop. Bootstrapping occurs <strong>inside</strong> each Random Forest
+fit: whenever trees are trained (including within each CV fold), each
+tree receives its own bootstrap sample. After CV, mean and standard
+deviation of fold metrics summarize statistical performance; bagging
+itself aggregates tree votes rather than computing a bootstrap mean of a
+scalar statistic.</p>
+<h3 id="e.-workflow-summary">E. Workflow Summary</h3>
+<p>WDBC clean data () stratified 80/20 split () GridSearchCV (5-fold) on
+development () best RF model () holdout evaluation + feature
+importance.</p>
+<p><em>(See also project workflow and model diagrams in the repository
+figures.)</em></p>
+<hr />
+<h2 id="iv.-dataset-description">IV. Dataset Description</h2>
+<h3 id="a.-source-and-features">A. Source and Features</h3>
+<p>We use the Wisconsin Diagnostic Breast Cancer dataset [1], [2]. After
+cleaning (<code>wdbc_clean.csv</code>), the data contain:</p>
+<ul>
+<li><strong>569</strong> samples (patients/tumors)</li>
+<li><strong>30</strong> continuous features: mean, standard error, and
+“worst” (largest mean of the three largest values) for radius, texture,
+perimeter, area, smoothness, compactness, concavity, concave points,
+symmetry, and fractal dimension</li>
+<li><strong>Label:</strong> diagnosis originally ({M,B}), encoded as
+({1,0})</li>
+</ul>
+<p>No missing values were present; patient IDs are unique.</p>
+<h3 id="b.-preprocessing-and-splits">B. Preprocessing and Splits</h3>
+<ol type="1">
+<li>Encode diagnosis to integers; drop ID from the feature matrix.</li>
+<li><strong>Stratified 80/20 split</strong> preserving class
+proportions:
+<ul>
+<li>Development: <strong>455</strong> samples →
+<code>development_unscaled.csv</code></li>
+<li>Final holdout: <strong>114</strong> samples →
+<code>test_unscaled_FINAL_HOLDOUT.csv</code> (<strong>locked</strong>;
+unused during tuning)</li>
+</ul></li>
+<li>Features remain <strong>unscaled</strong> (tree splits are
+scale-invariant).</li>
+</ol>
+<h3 id="c.-exploratory-data-analysis-eda">C. Exploratory Data Analysis
+(EDA)</h3>
+<p>EDA figures are provided in <code>report_figures/</code> (also copied
+into the submission package):</p>
+<figure>
+<img src="report_figures/eda_class_distribution.png"
+alt="Class distribution" />
+<figcaption aria-hidden="true">Class distribution</figcaption>
+</figure>
+<figure>
+<img src="report_figures/eda_split_counts.png"
+alt="Stratified split counts" />
+<figcaption aria-hidden="true">Stratified split counts</figcaption>
+</figure>
+<figure>
+<img src="report_figures/eda_feature_boxplots.png"
+alt="Feature boxplots by diagnosis" />
+<figcaption aria-hidden="true">Feature boxplots by
+diagnosis</figcaption>
+</figure>
+<figure>
+<img src="report_figures/eda_correlation_heatmap.png"
+alt="Correlation heatmap" />
+<figcaption aria-hidden="true">Correlation heatmap</figcaption>
+</figure>
+<p>Qualitatively, malignant cases show larger area/perimeter and higher
+concave-points values, consistent with irregular, enlarged nuclei.</p>
+<hr />
+<h2 id="v.-experiments-results-and-discussion">V. Experiments, Results,
+and Discussion</h2>
+<h3 id="a.-experimental-setup">A. Experimental Setup</h3>
+<ul>
+<li><strong>Library:</strong> scikit-learn
+<code>RandomForestClassifier</code>, <code>GridSearchCV</code>,
+<code>StratifiedKFold</code></li>
+<li><strong>Hardware/software:</strong> Python 3, pandas, NumPy, joblib,
+matplotlib</li>
+<li><strong>Primary scripts/notebooks:</strong>
+<code>train_random_forest_model.py</code>,
+<code>Random_Trees.ipynb</code>,
+<code>03_Model_Preprocessing.ipynb</code></li>
+<li><strong>Note on training loss:</strong> Random Forests are not
+trained by iterative gradient descent; there is <strong>no epoch-wise
+training loss curve</strong>. We instead report <strong>per-fold CV
+accuracies</strong> and holdout metrics as learning/evaluation
+diagnostics.</li>
+</ul>
+<h3 id="b.-metrics-descriptions">B. Metrics Descriptions</h3>
+<table>
+<colgroup>
+<col style="width: 47%" />
+<col style="width: 52%" />
+</colgroup>
+<thead>
+<tr>
+<th>Metric</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Accuracy</strong></td>
+<td>Fraction of correct predictions overall</td>
+</tr>
+<tr>
+<td><strong>Precision (malignant)</strong></td>
+<td>(TP/(TP+FP)): of predicted malignancies, how many were truly
+malignant</td>
+</tr>
+<tr>
+<td><strong>Recall (malignant)</strong></td>
+<td>(TP/(TP+FN)): of true malignancies, how many were detected</td>
+</tr>
+<tr>
+<td><strong>F1</strong></td>
+<td>Harmonic mean of precision and recall</td>
+</tr>
+<tr>
+<td><strong>MCC</strong></td>
+<td>Correlation of predictions vs labels using TP,TN,FP,FN; range
+([-1,1])</td>
+</tr>
+<tr>
+<td><strong>ROC-AUC</strong></td>
+<td>Ranking quality of predicted probabilities across thresholds</td>
+</tr>
+</tbody>
+</table>
+<h3 id="c.-cross-validation-results">C. Cross-Validation Results</h3>
+<p><strong>TABLE I. Five-fold stratified CV metrics on development data
+(n=455)</strong></p>
+<table>
+<thead>
+<tr>
+<th>Metric</th>
+<th>Mean</th>
+<th>Std</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Accuracy</td>
+<td>0.9648</td>
+<td>0.0128</td>
+</tr>
+<tr>
+<td>Precision</td>
+<td>0.9536</td>
+<td>0.0219</td>
+</tr>
+<tr>
+<td>Recall</td>
+<td>0.9529</td>
+<td>0.0300</td>
+</tr>
+<tr>
+<td>F1</td>
+<td>0.9528</td>
+<td>0.0172</td>
+</tr>
+<tr>
+<td>ROC-AUC</td>
+<td>0.9885</td>
+<td>0.0073</td>
+</tr>
+</tbody>
+</table>
+<p>Fold accuracies were stable (approximately 0.945–0.978), indicating
+low selection variance.</p>
+<h3 id="d.-holdout-results">D. Holdout Results</h3>
+<p><strong>TABLE II. Locked holdout performance (n=114)</strong></p>
+<table>
+<thead>
+<tr>
+<th>Metric</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Accuracy</td>
+<td><strong>0.9737</strong></td>
+</tr>
+<tr>
+<td>Precision (malignant)</td>
+<td><strong>1.0000</strong></td>
+</tr>
+<tr>
+<td>Recall (malignant)</td>
+<td><strong>0.9286</strong></td>
+</tr>
+<tr>
+<td>F1</td>
+<td><strong>0.9630</strong></td>
+</tr>
+<tr>
+<td>MCC</td>
+<td><strong>0.9442</strong></td>
+</tr>
+<tr>
+<td>ROC-AUC</td>
+<td><strong>0.9964</strong></td>
+</tr>
+</tbody>
+</table>
+<p><strong>TABLE III. Holdout confusion matrix</strong></p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th style="text-align: right;">Pred. Benign</th>
+<th style="text-align: right;">Pred. Malignant</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>True Benign</strong></td>
+<td style="text-align: right;">72</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr>
+<td><strong>True Malignant</strong></td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">39</td>
+</tr>
+</tbody>
+</table>
+<h3 id="e.-visualization-of-results">E. Visualization of Results</h3>
+<p>Figures in <code>report_figures/</code> include:</p>
+<figure>
+<img src="report_figures/results_cv_fold_accuracy.png"
+alt="CV accuracy by fold" />
+<figcaption aria-hidden="true">CV accuracy by fold</figcaption>
+</figure>
+<figure>
+<img src="report_figures/results_cv_metrics.png"
+alt="CV metrics mean ± std" />
+<figcaption aria-hidden="true">CV metrics mean ± std</figcaption>
+</figure>
+<figure>
+<img src="report_figures/results_confusion_matrix.png"
+alt="Holdout confusion matrix" />
+<figcaption aria-hidden="true">Holdout confusion matrix</figcaption>
+</figure>
+<figure>
+<img src="report_figures/results_roc_curve.png"
+alt="Holdout ROC curve" />
+<figcaption aria-hidden="true">Holdout ROC curve</figcaption>
+</figure>
+<figure>
+<img src="report_figures/results_holdout_metrics.png"
+alt="Holdout metrics" />
+<figcaption aria-hidden="true">Holdout metrics</figcaption>
+</figure>
+<figure>
+<img src="report_figures/results_feature_importance.png"
+alt="Feature importance" />
+<figcaption aria-hidden="true">Feature importance</figcaption>
+</figure>
+<h3 id="f.-feature-importance">F. Feature Importance</h3>
+<p>Top predictors: <code>area_worst</code> (0.146),
+<code>perimeter_worst</code> (0.142), <code>concave_points_worst</code>
+(0.103), <code>concave_points_mean</code> (0.100),
+<code>radius_worst</code> (0.079). Worst-case size and concavity
+features dominate, aligning with clinical intuition that extreme
+irregular morphology indicates malignancy.</p>
+<h3 id="g.-results-discussion">G. Results Discussion</h3>
+<p>The model generalizes well: holdout accuracy (97.37%) slightly
+exceeds CV mean (96.48%), suggesting the locked split is not adversely
+biased. Perfect malignant precision (no false positives) is desirable
+for avoiding unnecessary alarm, but recall of 0.93 implies <strong>three
+missed malignancies</strong>—the primary clinical weakness. Because
+Random Forest optimizes impurity-based splits rather than an explicit
+recall loss, future work should incorporate cost-sensitive thresholds or
+class-specific penalties.</p>
+<p><strong>Baseline comparison context.</strong> At midpoint, logistic
+regression, SVM, and boosting were planned as formal baselines on the
+same holdout [project plan]. In this report, Random Forest is positioned
+against a single decision tree conceptually (bagging + feature
+randomness reduce variance) and against linear models (RF captures
+nonlinear interactions among correlated morphological features without
+manual feature crosses). Completing numerical baseline tables remains
+recommended for an extended journal version.</p>
+<hr />
+<h2 id="vi.-conclusion-and-future-directions">VI. Conclusion and Future
+Directions</h2>
+<p>We presented a tuned Random Forest for breast cancer diagnosis on
+WDBC with rigorous stratified CV and locked holdout evaluation. The
+final model attains <strong>97.37% holdout accuracy</strong> and
+<strong>0.996 ROC-AUC</strong>, with transparent feature importances
+centered on worst-area and concave-points measurements.</p>
+<p><strong>Future directions:</strong> (1) optimize decision thresholds
+/ class weights to reduce false negatives; (2) run matched baselines
+(logistic regression, SVM, XGBoost) on the same split; (3) probability
+calibration; (4) SHAP explanations for case-level interpretability; (5)
+external validation beyond WDBC.</p>
+<hr />
+<h2 id="vii.-code-availability">VII. Code Availability</h2>
+<p>Code, notebooks, cleaned CSVs, saved model, metrics JSON, and figures
+are available in the project repository:</p>
+<p><strong>GitHub:</strong>
+<code>https://github.com/&lt;YOUR_USERNAME&gt;/&lt;YOUR_REPO&gt;</code><br />
+<em>(Replace with your actual repository URL before
+submission.)</em></p>
+<p><strong>How to run:</strong> see <code>HOW_TO_RUN.md</code> and the
+repository <code>README.md</code> in the same Dropbox submission.</p>
+<p>Primary entry points:</p>
+<ul>
+<li><code>03_Model_Preprocessing.ipynb</code> — cleaning/split
+overview<br />
+</li>
+<li><code>train_random_forest_model.py</code> or
+<code>Random_Trees.ipynb</code> — training + evaluation<br />
+</li>
+<li>Artifacts: <code>models/random_forest_cv5_model.joblib</code>,
+<code>random_forest_cv5_results.json</code></li>
+</ul>
+<hr />
+<h2 id="references">References</h2>
+<p>[1] W. N. Street, W. H. Wolberg, and O. L. Mangasarian, “Nuclear
+feature extraction for breast tumor diagnosis,” in <em>Proc. SPIE</em>,
+vol. 1905, 1993, pp. 861–870.</p>
+<p>[2] W. H. Wolberg, W. N. Street, and O. L. Mangasarian, “Machine
+learning techniques to diagnose breast cancer from fine-needle
+aspirates,” <em>Cancer Lett.</em>, vol. 77, no. 2–3, pp. 163–171,
+1994.</p>
+<p>[3] L. Breiman, “Random forests,” <em>Mach. Learn.</em>, vol. 45, no.
+1, pp. 5–32, 2001.</p>
+<p>[4] T. G. Dietterich, “Ensemble methods in machine learning,” in
+<em>Multiple Classifier Systems</em>. Berlin, Germany: Springer, 2000,
+pp. 1–15.</p>
+<p>[5] M. Fernández-Delgado, E. Cernadas, S. Barro, and D. Amorim, “Do
+we need hundreds of classifiers to solve real world classification
+problems?” <em>J. Mach. Learn. Res.</em>, vol. 15, pp. 3133–3181,
+2014.</p>
+<p>[6] A. F. M. Agarap, “On breast cancer detection: An application of
+machine learning algorithms on the Wisconsin Diagnostic Dataset,”
+<em>arXiv:1711.07831</em>, 2017.</p>
+<p>[7] K. Kourou, T. P. Exarchos, K. P. Exarchos, M. V. Karamouzis, and
+D. I. Fotiadis, “Machine learning applications in cancer prognosis and
+prediction,” <em>Comput. Struct. Biotechnol. J.</em>, vol. 13, pp. 8–17,
+2015.</p>
+<p>[8] J. A. Hanley and B. J. McNeil, “The meaning and use of the area
+under a receiver operating characteristic (ROC) curve,”
+<em>Radiology</em>, vol. 143, no. 1, pp. 29–36, 1982.</p>
+<p>[9] (Methodological reference used in midpoint planning) Random
+Forest clinical prediction workflow with 5-fold CV and GridSearchCV as
+adapted from related biomedical ensemble studies; see PubMed record
+40615474 for an example RF risk-stratification pipeline template.</p>
+<p>[10] S. M. Lundberg and S.-I. Lee, “A unified approach to
+interpreting model predictions,” in <em>Proc. NeurIPS</em>, 2017.</p>
+<p>[11] L. Shen <em>et al.</em>, “Deep learning to improve breast cancer
+detection on screening mammography,” <em>Sci. Rep.</em>, vol. 9, Art.
+no. 12495, 2019.</p>
+<p>[12] R. Shwartz-Ziv and A. Armon, “Tabular data: Deep learning is not
+all you need,” <em>Inf. Fusion</em>, vol. 81, pp. 84–90, 2022.</p>
+<p>[13] F. Pedregosa <em>et al.</em>, “Scikit-learn: Machine learning in
+Python,” <em>J. Mach. Learn. Res.</em>, vol. 12, pp. 2825–2830,
+2011.</p>
+<p>[14] D. Chicco and G. Jurman, “The advantages of the Matthews
+correlation coefficient (MCC) over F1 score and accuracy in binary
+classification evaluation,” <em>BMC Genomics</em>, vol. 21, Art. no. 6,
+2020.</p>
+</body>
+</html>

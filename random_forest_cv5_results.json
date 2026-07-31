@@ -1,0 +1,167 @@
+{
+  "model": "RandomForestClassifier",
+  "data": {
+    "development_file": "development_unscaled.csv",
+    "holdout_file": "test_unscaled_FINAL_HOLDOUT.csv",
+    "development_samples": 455,
+    "holdout_samples": 114,
+    "feature_count": 30,
+    "scaling": "none (unscaled features)"
+  },
+  "validation": {
+    "method": "5-fold stratified cross-validation",
+    "tuning": "GridSearchCV on development set",
+    "selection_metric": "accuracy"
+  },
+  "best_hyperparameters": {
+    "max_depth": null,
+    "max_features": "sqrt",
+    "min_samples_leaf": 1,
+    "min_samples_split": 5,
+    "n_estimators": 300
+  },
+  "cv5_metrics": {
+    "accuracy": {
+      "mean": 0.9648351648351647,
+      "std": 0.01281527888976988,
+      "fold_values": [
+        0.967032967032967,
+        0.978021978021978,
+        0.9560439560439561,
+        0.945054945054945,
+        0.978021978021978
+      ]
+    },
+    "precision": {
+      "mean": 0.9535530727442492,
+      "std": 0.021939285857803855,
+      "fold_values": [
+        0.9696969696969697,
+        0.9444444444444444,
+        0.96875,
+        0.9142857142857143,
+        0.9705882352941176
+      ]
+    },
+    "recall": {
+      "mean": 0.9529411764705882,
+      "std": 0.029994232432898744,
+      "fold_values": [
+        0.9411764705882353,
+        1.0,
+        0.9117647058823529,
+        0.9411764705882353,
+        0.9705882352941176
+      ]
+    },
+    "f1": {
+      "mean": 0.9528341717195403,
+      "std": 0.017246998506141527,
+      "fold_values": [
+        0.9552238805970149,
+        0.9714285714285714,
+        0.9393939393939394,
+        0.927536231884058,
+        0.9705882352941176
+      ]
+    },
+    "roc_auc": {
+      "mean": 0.9885448916408668,
+      "std": 0.007322052332328915,
+      "fold_values": [
+        0.9876160990712075,
+        0.999484004127967,
+        0.9932920536635707,
+        0.9840041279669762,
+        0.978328173374613
+      ]
+    }
+  },
+  "holdout_metrics": {
+    "accuracy": 0.9736842105263158,
+    "precision": 1.0,
+    "recall": 0.9285714285714286,
+    "f1_score": 0.9629629629629629,
+    "mcc": 0.9441549509633318,
+    "roc_auc": 0.9963624338624338
+  },
+  "confusion_matrix_holdout": [
+    [
+      72,
+      0
+    ],
+    [
+      3,
+      39
+    ]
+  ],
+  "classification_report_holdout": {
+    "0": {
+      "precision": 0.96,
+      "recall": 1.0,
+      "f1-score": 0.9795918367346939,
+      "support": 72.0
+    },
+    "1": {
+      "precision": 1.0,
+      "recall": 0.9285714285714286,
+      "f1-score": 0.9629629629629629,
+      "support": 42.0
+    },
+    "accuracy": 0.9736842105263158,
+    "macro avg": {
+      "precision": 0.98,
+      "recall": 0.9642857142857143,
+      "f1-score": 0.9712773998488284,
+      "support": 114.0
+    },
+    "weighted avg": {
+      "precision": 0.9747368421052632,
+      "recall": 0.9736842105263158,
+      "f1-score": 0.9734654095556351,
+      "support": 114.0
+    }
+  },
+  "top_features": [
+    {
+      "feature": "area_worst",
+      "importance": 0.14579602658579735
+    },
+    {
+      "feature": "perimeter_worst",
+      "importance": 0.14150925138390488
+    },
+    {
+      "feature": "concave_points_worst",
+      "importance": 0.10295543903629278
+    },
+    {
+      "feature": "concave_points_mean",
+      "importance": 0.10046475521255537
+    },
+    {
+      "feature": "radius_worst",
+      "importance": 0.07915018585144495
+    },
+    {
+      "feature": "radius_mean",
+      "importance": 0.05606268804880711
+    },
+    {
+      "feature": "perimeter_mean",
+      "importance": 0.055313461627772904
+    },
+    {
+      "feature": "concavity_mean",
+      "importance": 0.04554294029342385
+    },
+    {
+      "feature": "concavity_worst",
+      "importance": 0.03996722424832302
+    },
+    {
+      "feature": "area_mean",
+      "importance": 0.03731276347835356
+    }
+  ]
+}
